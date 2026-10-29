@@ -3,7 +3,7 @@ import {
   Compass, Upload, Trash2, FileText, Loader2, X, Search, User,
 } from 'lucide-react';
 import type { Theme } from '../themes';
-import { supabase, type SharedNote } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, type SharedNote } from '../lib/supabase';
 import type { PageData } from './Notes';
 
 type BrowseNotesProps = {
@@ -30,6 +30,11 @@ export default function BrowseNotes({ theme }: BrowseNotesProps) {
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const fetchNotes = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setError('Database is not configured. Community notes are unavailable in this deployment.');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     const { data, error: err } = await supabase

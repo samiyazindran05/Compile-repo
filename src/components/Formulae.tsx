@@ -4,7 +4,7 @@ import {
   BookOpen, Plus, Check,
 } from 'lucide-react';
 import type { Theme } from '../themes';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { FORMULAE_DATABASE, type Formula, type Topic } from './formulaeData';
 
 type BrowseNotesProps = { theme: Theme };
@@ -24,6 +24,10 @@ export default function Formulae({ theme }: BrowseNotesProps) {
   const [savedFlash, setSavedFlash] = useState(false);
 
   const fetchSaved = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setLoadingSaved(false);
+      return;
+    }
     setLoadingSaved(true);
     const { data, error } = await supabase
       .from('saved_formulae')
